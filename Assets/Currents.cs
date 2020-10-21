@@ -528,7 +528,7 @@ public class Currents : MonoBehaviour
     //twitch plays
     private bool inputIsValid(string cmd)
     {
-        string[] validstuff = { "r", "g", "b", "y", "submit" };
+        string[] validstuff = { "r", "g", "b", "y", "submit", "clear", "c", "reset" };
         if (validstuff.Contains(cmd.ToLower()))
         {
             return true;
@@ -537,7 +537,7 @@ public class Currents : MonoBehaviour
     }
 
 #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"!{0} press <R/G/B/Y/submit> [Presses the specified button]. You can also string presses together i.e. press R G B Y, press R,G,B,Y";
+    private readonly string TwitchHelpMessage = @"!{0} press <R/G/B/Y/submit/clear> [Presses the specified button]. You can also string presses together i.e. press R G B Y, press R,G,B,Y. You can also use numbers to simplify the expression i.e. press R 4 G 3.";
 #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
     {
@@ -568,6 +568,38 @@ public class Currents : MonoBehaviour
                     else if (parameters[i].ToLower().Equals("submit"))
                     {
                         buttons[4].OnInteract();
+                    }
+                    else if (parameters[i].ToLower().Equals("clear") || parameters[i].ToLower().Equals("c") || parameters[i].ToLower().Equals("reset"))
+                    {
+                        buttons[5].OnInteract();
+                    }
+                }
+                else if (i > 1 && parameters[i].All(char.IsNumber))
+                {
+                    if (inputIsValid(parameters[i - 1]))
+                    {
+                        var value = 0;
+                        int.TryParse(parameters[i], out value);
+                        for (int j = 0; j < value-1; j++)
+                        {
+                            yield return null;
+                            if (parameters[i-1].ToLower().Equals("r"))
+                            {
+                                buttons[0].OnInteract();
+                            }
+                            else if (parameters[i-1].ToLower().Equals("g"))
+                            {
+                                buttons[1].OnInteract();
+                            }
+                            else if (parameters[i-1].ToLower().Equals("b"))
+                            {
+                                buttons[2].OnInteract();
+                            }
+                            else if (parameters[i-1].ToLower().Equals("y"))
+                            {
+                                buttons[3].OnInteract();
+                            }
+                        }
                     }
                 }
             }
